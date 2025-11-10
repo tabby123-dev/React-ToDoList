@@ -15,22 +15,28 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
-                sh 'npm install'
+                dir('backend') {
+                    echo 'Installing dependencies in backend...'
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo 'Running tests...'
-                sh 'npm test'
+                dir('backend') {
+                    echo 'Running tests...'
+                    sh 'npm test'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the app...'
-                sh 'npm run build'
+                dir('backend') {
+                    echo 'Building the app...'
+                    sh 'npm run build'
+                }
             }
         }
 
@@ -39,9 +45,11 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Deploying application...'
-                // Example deploy step:
-                // sh 'scp -r ./dist user@server:/var/www/app'
+                dir('backend') {
+                    echo 'Deploying the app...'
+                    // Example deploy command:
+                    // sh 'scp -r ./dist user@server:/var/www/app'
+                }
             }
         }
     }
