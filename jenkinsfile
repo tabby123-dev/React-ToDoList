@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_ENV = 'development'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Cloning repository...'
+                git branch: 'main', url: 'https://github.com/tabby123-dev/React-ToDoList.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                sh 'npm test'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building the app...'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Deploying application...'
+                // Example deploy step:
+                // sh 'scp -r ./dist user@server:/var/www/app'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully 🎉'
+        }
+        failure {
+            echo 'Pipeline failed ❌'
+        }
+    }
+}
