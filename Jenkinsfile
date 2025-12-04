@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "NodeJs"
-    }
-
     environment {
         DOCKERHUB_REPO = "wtabitha/react-todo"   // change this
     }
