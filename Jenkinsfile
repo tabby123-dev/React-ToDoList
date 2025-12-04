@@ -10,7 +10,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'peter-branch',
-                    url: 'https://github.com/women-techsters-fellowship/React-ToDoList.git'
+                    url: 'https://github.com/tabby123-dev/React-ToDoList.git'
             }
         }
 
