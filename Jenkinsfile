@@ -9,7 +9,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'peter-branch',
+                git branch: 'main-branch',
                     url: 'https://github.com/tabby123-dev/React-ToDoList.git'
             }
         }
@@ -51,7 +51,7 @@ pipeline {
             emailext(
                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
                 body: "The build ${env.BUILD_URL} completed successfully.",
-                to: "ukpabipeteru@gmail.com"
+                to: "wanjikutabby960@gmail.com"
             )
         }
         failure {
