@@ -5,6 +5,10 @@ pipeline {
         nodejs "NodeJs"
     }
 
+    environment {
+        DOCKERHUB_REPO = "wtabitha/react-todo"   // change this
+    }
+
     stages {
 
         stage('Checkout') {
@@ -17,13 +21,8 @@ pipeline {
         stage('Frontend Build') {
             steps {
                 dir('dive-react-app') {
-                    echo "Installing frontend dependencies"
                     sh 'npm install'
-
-                    echo "Running lint"
                     sh 'npm run lint'
-
-                    echo "Building frontend"
                     sh 'npm run build'
                 }
             }
@@ -32,34 +31,35 @@ pipeline {
         stage('Backend Install') {
             steps {
                 dir('backend') {
-                    echo "Installing backend dependencies"
                     sh 'npm install'
-
-                    echo "Running backend tests (instead of starting server)"
-                    sh 'npm test || true'   // prevents failure if no tests exist
+                    sh 'npm test || true'
                 }
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${DOCKERHUB_REPO}:latest ."
+            }
+        }
+
+        stage('Docker Login & Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub_creds',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                    sh "docker push ${DOCKERHUB_REPO}:latest"
+                }
+            }
+        }
     }
 
     post {
         always {
             cleanWs()
-        }
-        success {
-            emailext(
-                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: "The build ${env.BUILD_URL} completed successfully.",
-                to: "wanjikutabby960@gmail.com"
-            )
-        }
-        failure {
-            emailext(
-                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: "The build ${env.BUILD_URL} failed. Please check the logs.",
-                to: "wanjikutabby960@gmail.com"
-            )
         }
     }
 }
